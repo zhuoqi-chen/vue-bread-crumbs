@@ -11,7 +11,9 @@ import NewsList from "./views/news-list/news-list.vue";
 import newsDetail from "./views/news-detail/news-detail.vue";
 
 Vue.use(Router);
-
+function isEmptyObject(obj: object) {
+  return Object.entries(obj).length === 0 && obj.constructor === Object;
+}
 const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
@@ -40,7 +42,7 @@ const router = new Router({
               component: Overview
             },
             {
-              path: "compamy-list/",
+              path: "compamy-list",
               component: EmptyLayout,
               name: "companyList",
               redirect: { name: "companyListIndex" },
@@ -51,7 +53,10 @@ const router = new Router({
                 {
                   path: "",
                   name: "companyListIndex",
-                  component: CompamyList
+                  component: CompamyList,
+                  meta: {
+                    storeQuery: true
+                  }
                 },
                 {
                   path: "compamy-detail/:companyId",
@@ -104,5 +109,11 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
   console.log("beforeEach", to);
   next();
+});
+router.afterEach((to, from) => {
+  console.log("afterEach", from);
+  if (from.meta.storeQuery && !isEmptyObject(from.query)) {
+    window.sessionStorage.setItem(from.path, JSON.stringify(from.query));
+  }
 });
 export default router;
