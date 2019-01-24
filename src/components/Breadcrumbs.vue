@@ -2,7 +2,7 @@
   <div>
     <span v-for="item in breadcrumbs" :key="item.name">
       <router-link
-        v-if="$route.name!=item.routerName+'Index'"
+        v-if="$route.name!=item.routerName+'Index' && $route.name!=item.routerName"
         :to="{name:item.routerName,params:$route.params,query:$route.query}"
       >{{item.title}} ></router-link>
       <span v-else>{{item.title}}</span>

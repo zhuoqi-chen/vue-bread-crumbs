@@ -12,7 +12,7 @@ import newsDetail from "./views/news-detail/news-detail.vue";
 
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
@@ -84,7 +84,10 @@ export default new Router({
                         {
                           path: ":newId",
                           name: "newsDetail",
-                          component: newsDetail
+                          component: newsDetail,
+                          meta: {
+                            breadcrumbs: "news-detail"
+                          }
                         }
                       ]
                     }
@@ -98,3 +101,8 @@ export default new Router({
     }
   ]
 });
+router.beforeEach((to, from, next) => {
+  console.log("beforeEach", to);
+  next();
+});
+export default router;

@@ -8,20 +8,18 @@ import bus from "../../utils/bus";
 const companyMap = ["google", "apple", "aws"];
 @Component({
   name: "CompanyDetailLayout",
-  created() {
-    const matchedRoute = this.$route.matched.find(
-      item => item.name === "companyDetail"
-    );
+  beforeRouteEnter(to, from, next) {
+    const matchedRoute = to.matched.find(item => item.name === "companyDetail");
     if (matchedRoute) {
       setTimeout(() => {
-        matchedRoute.meta.breadcrumbs =
-          companyMap[this.$route.params.companyId];
+        matchedRoute.meta.breadcrumbs = companyMap[to.params.companyId];
         bus.$emit("updateBreadcrumbs");
-      }, 500);
+      }, 200);
     }
+    next();
   },
   beforeRouteLeave(to, from, next) {
-    const matchedRoute = this.$route.matched.find(
+    const matchedRoute = from.matched.find(
       item => item.name === "companyDetail"
     );
     if (matchedRoute) {
