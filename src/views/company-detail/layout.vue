@@ -5,27 +5,35 @@
 <script>
 import { Component, Vue } from "vue-property-decorator";
 import bus from "../../utils/bus";
-const companyMap = ["google", "apple", "aws"];
+import { getCompanyNameById } from "./service";
+let originBreadcrumbs = "";
+function handelRouterChange(router, breadcrumbsText) {
+  const matchedRoute = router.matched.find(
+    item => item.name === "companyDetail"
+  );
+  if (matchedRoute) {
+    if (!originBreadcrumbs) originBreadcrumbs = matchedRoute.meta.breadcrumbs;
+    matchedRoute.meta.breadcrumbs = breadcrumbsText;
+    bus.$emit("updateBreadcrumbs");
+  }
+}
+
 @Component({
   name: "CompanyDetailLayout",
   beforeRouteEnter(to, from, next) {
-    const matchedRoute = to.matched.find(item => item.name === "companyDetail");
-    if (matchedRoute) {
-      setTimeout(() => {
-        matchedRoute.meta.breadcrumbs = companyMap[to.params.companyId];
-        bus.$emit("updateBreadcrumbs");
-      }, 200);
-    }
+    getCompanyNameById(to.params.companyId).then(companyName => {
+      handelRouterChange(to, companyName);
+    });
+    next();
+  },
+  beforeRouteUpdate(to, from, next) {
+    getCompanyNameById(to.params.companyId).then(companyName => {
+      handelRouterChange(to, companyName);
+    });
     next();
   },
   beforeRouteLeave(to, from, next) {
-    const matchedRoute = from.matched.find(
-      item => item.name === "companyDetail"
-    );
-    if (matchedRoute) {
-      matchedRoute.meta.breadcrumbs = `...`;
-      bus.$emit("updateBreadcrumbs");
-    }
+    handelRouterChange(from, originBreadcrumbs);
     next();
   }
 })
